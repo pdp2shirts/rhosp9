@@ -26,7 +26,7 @@ parameter_defaults:
   InternalApiAllocationPools: [{'start': '10.105.182.200', 'end': '110.105.182.250'}]
   TenantAllocationPools: [{'start': '10.105.183.200', 'end': '10.105.183.250'}]
   StorageAllocationPools: [{'start': '10.105.184.200', 'end': '10.105.184.250'}]
-  StorageMgmtAllocationPools: [{'start': '10.105.1850', 'end': '10.105.185.250'}]
+  StorageMgmtAllocationPools: [{'start': '10.105.185.200', 'end': '10.105.185.250'}]
   ManagementAllocationPools: [{'start': '10.105.181.10', 'end': '10.105.181.200'}]
   # Leave room for floating IPs in the External allocation pool
   ExternalAllocationPools: [{'start': '10.105.181.200', 'end': '10.105.181.210'}]
