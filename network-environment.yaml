@@ -1,0 +1,51 @@
+# This template configures each role to use a pair of bonded nics (nic2 and
+# nic3) and configures an IP address on each relevant isolated network
+# for each role. This template assumes use of network-isolation.yaml.
+#
+# FIXME: if/when we add functionality to heatclient to include heat
+# environment files we should think about using it here to automatically
+# include network-isolation.yaml.
+resource_registry:
+  OS::TripleO::BlockStorage::Net::SoftwareConfig: ../network/config/bond-with-vlans/cinder-storage.yaml
+  OS::TripleO::Compute::Net::SoftwareConfig: ../network/config/bond-with-vlans/compute.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: ../network/config/bond-with-vlans/controller.yaml
+  OS::TripleO::ObjectStorage::Net::SoftwareConfig: ../network/config/bond-with-vlans/swift-storage.yaml
+  OS::TripleO::CephStorage::Net::SoftwareConfig: ../network/config/bond-with-vlans/ceph-storage.yaml
+
+parameter_defaults:
+  # This sets 'external_network_bridge' in l3_agent.ini to an empty string
+  # so that external networks act like provider bridge networks (they
+  # will plug into br-int instead of br-ex)
+
+  InternalApiNetCidr: 10.105.182.0/24
+  TenantNetCidr: 10.105.183.0/24
+  StorageNetCidr: 10.105.184.0/24
+  StorageMgmtNetCidr: 10.105.186.0/24
+  ManagementNetCidr: 10.105.185.0/24
+  ExternalNetCidr: 10.105.181.0/24
+  InternalApiAllocationPools: [{'start': '10.105.182.200', 'end': '110.105.182.250'}]
+  TenantAllocationPools: [{'start': '10.105.183.200', 'end': '10.105.183.250'}]
+  StorageAllocationPools: [{'start': '10.105.184.200', 'end': '10.105.184.250'}]
+  StorageMgmtAllocationPools: [{'start': '10.105.1850', 'end': '10.105.185.250'}]
+  ManagementAllocationPools: [{'start': '10.105.181.10', 'end': '10.105.181.200'}]
+  # Leave room for floating IPs in the External allocation pool
+  ExternalAllocationPools: [{'start': '10.105.181.200', 'end': '10.105.181.210'}]
+  # Set to the router gateway on the external network
+  ExternalInterfaceDefaultRoute: 10.105.181.1
+  # Gateway router for the provisioning network (or Undercloud IP)
+  ControlPlaneDefaultRoute: 10.105.180.30
+  # The IP address of the EC2 metadata server. Generally the IP of the Undercloud
+  EC2MetadataIp: 10.105.180.30
+  # Define the DNS servers (maximum 2) for the overcloud nodes
+  DnsServers: ["10.105.134.20","10.105.134.21"]
+  InternalApiNetworkVlanID: 182
+  StorageNetworkVlanID: 184
+  StorageMgmtNetworkVlanID: 186
+  TenantNetworkVlanID: 183
+  ManagementNetworkVlanID: 185
+  ExternalNetworkVlanID: 181
+  # Set to "br-ex" if using floating IPs on native VLAN on bridge br-ex
+  NeutronExternalNetworkBridge: "''"
+  # Customize bonding options if required
+  BondInterfaceOvsOptions:
+    "bond_mode=balance-slb"
